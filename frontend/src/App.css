@@ -1,0 +1,13 @@
+.app {
+  text-align: center;
+  margin-top: 60px;
+  font-family: Arial, sans-serif;
+}
+
+h1 {
+  color: #1db954; /* Spotify green */
+}
+
+p {
+  font-size: 1.2rem;
+}
