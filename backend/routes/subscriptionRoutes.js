@@ -1,10 +1,20 @@
 import express from "express";
-import { getPlans, assignSubscription, checkUserSubscription } from "../controllers/subscriptionController.js";
+import {
+  getAllSubscriptions,
+  assignSubscriptionToUser,
+  getUserSubscription
+} from "../controllers/subscriptionController.js";
+import { protect } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.get("/", getPlans); // list all plans
-router.post("/assign", assignSubscription); // assign plan to user
-router.get("/user/:userId", checkUserSubscription); // check if user has subscription
+// Get all subscription plans
+router.get("/", getAllSubscriptions);
+
+// Get a specific user's subscription
+router.get("/:userId", protect, getUserSubscription);
+
+// Assign subscription to a user
+router.post("/assign", protect, assignSubscriptionToUser);
 
 export default router;

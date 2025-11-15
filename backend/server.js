@@ -3,6 +3,9 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import songRoutes from "./routes/songRoutes.js";
 import subscriptionRoutes from "./routes/subscriptionRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
+
+
 import playlistRoutes from "./routes/playlistRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import path from "path";
@@ -24,9 +27,14 @@ app.use(cors({
 app.use("/uploads/songs", express.static(path.join(path.resolve(), "uploads/songs")));
 
 // Routes
+app.use("/api/users", userRoutes);
+
 app.use("/api/auth", authRoutes);
 app.use("/api/songs", songRoutes);
+app.use("/api/subscription", subscriptionRoutes);
 app.use("/api/subscriptions", subscriptionRoutes);
+
+
 app.use("/api/playlists", playlistRoutes);
 
 // Connect to MongoDB
