@@ -1,22 +1,39 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import UserHome from "./pages/UserHome";
 import AdminHome from "./pages/AdminHome";
+import UserHome from "./pages/UserHome";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
-  const role = localStorage.getItem("role"); // 'user' or 'admin'
-
   return (
-    <Router>
+    <BrowserRouter>
       <Routes>
-        <Route path="/musify" element={<Navigate to="/login" />} />
+        <Route path="/" element={<Login />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/user-home" element={role === "user" ? <UserHome /> : <Navigate to="/login" />} />
-        <Route path="/admin-home" element={role === "admin" ? <AdminHome /> : <Navigate to="/login" />} />
+
+        {/* User Home (normal user) */}
+        <Route
+          path="/user-home"
+          element={
+            <ProtectedRoute allowedRoles={["user"]}>
+              <UserHome />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Admin Home */}
+        <Route
+          path="/admin-home"
+          element={
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <AdminHome />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
-    </Router>
+    </BrowserRouter>
   );
 }
 

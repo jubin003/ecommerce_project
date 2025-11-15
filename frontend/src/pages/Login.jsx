@@ -10,8 +10,10 @@ export default function Login() {
     e.preventDefault();
     try {
       const res = await API.post("/auth/login", form);
-      localStorage.setItem("userId", res.data.user._id);
+      localStorage.setItem("token", res.data.token);
       localStorage.setItem("role", res.data.user.role);
+      localStorage.setItem("userId", res.data.user._id);
+
 
       if (res.data.user.role === "admin") navigate("/admin-home");
       else navigate("/user-home");
