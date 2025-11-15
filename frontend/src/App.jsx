@@ -4,6 +4,7 @@ import Register from "./pages/Register";
 import AdminHome from "./pages/AdminHome";
 import UserHome from "./pages/UserHome";
 import ProtectedRoute from "./components/ProtectedRoute";
+import SubscriptionInfo from "./pages/Subscriptions";
 
 function App() {
   return (
@@ -32,7 +33,14 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route path="/subscriptions" element={
+        <ProtectedRoute allowedRoles={["user"]}>
+        <SubscriptionInfo />
+        </ProtectedRoute>} 
+        />
       </Routes>
+      
+
     </BrowserRouter>
   );
 }
