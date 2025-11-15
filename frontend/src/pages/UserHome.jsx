@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import API from "../api";
 import SongCard from "../components/SongCard";
 import { useNavigate } from "react-router-dom";
+import { logout } from "../utils/auth";
 
 export default function UserHome() {
   const [songs, setSongs] = useState([]);
@@ -35,6 +36,13 @@ export default function UserHome() {
   return (
     <div style={{ textAlign: "center" }}>
       <h2>Welcome User</h2>
+
+       <button 
+        onClick={logout} 
+        style={{ marginTop: "20px", padding: "10px 20px", cursor: "pointer" }}
+      >
+        Logout
+      </button>
 
       {!subscription && (
         <button onClick={() => navigate("/subscriptions")}>Buy Subscription</button>

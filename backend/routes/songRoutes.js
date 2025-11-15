@@ -1,10 +1,10 @@
 import express from "express";
 import multer from "multer";
 import { addSong, getSongs, deleteSong } from "../controllers/songController.js";
+import { protect, adminonly } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-// Multer storage for MP3 files
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, "uploads/songs/"),
   filename: (req, file, cb) => {
@@ -15,8 +15,8 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-router.get("/", getSongs);
-router.post("/add", upload.single("file"), addSong); // admin only
-router.delete("/:id", deleteSong); // admin only
+router.get("/", protect, getSongs);
+router.post("/add", protect, adminonly, upload.single("file"), addSong);
+router.delete("/:id", protect, adminonly, deleteSong);
 
 export default router;
