@@ -10,10 +10,10 @@ export const getSongs = async (req, res) => {
   }
 };
 
-// Add a new song (admin only, with MP3 upload)
+// Add a new song (admin only, with MP3 and cover art upload)
 export const addSong = async (req, res) => {
   try {
-    const { title, artist, album, duration } = req.body;
+    const { title, artist, album, duration, coverArt } = req.body;
 
     if (!req.file) return res.status(400).json({ message: "MP3 file is required" });
 
@@ -22,9 +22,10 @@ export const addSong = async (req, res) => {
     const newSong = await Song.create({
       title,
       artist,
-      album,
-      duration,
+      album: album || "",
+      duration: duration || 0,
       url: fileUrl,
+      coverArt: coverArt || "https://via.placeholder.com/220x180?text=No+Cover",
     });
 
     res.status(201).json({ message: "Song uploaded successfully", song: newSong });
@@ -42,7 +43,4 @@ export const deleteSong = async (req, res) => {
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
-
- 
 };
-
