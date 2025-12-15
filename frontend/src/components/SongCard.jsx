@@ -65,15 +65,16 @@ export default function SongCard({ song, onPlay, isCurrentlyPlaying }) {
           background: "#2a2a2a",
         }}
       >
-        <img
-          src={song.coverArt || "https://via.placeholder.com/220x180?text=No+Cover"}
-          alt={song.title}
-          style={{
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-          }}
-        />
+              <img
+              src={
+                song.coverArt.startsWith("http")
+                  ? song.coverArt
+                  : `http://localhost:5001${song.coverArt}`
+              }
+              alt={song.title}
+              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+            />
+
         
         {/* Play/Pause Button Overlay */}
         <div

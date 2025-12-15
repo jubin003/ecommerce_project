@@ -25,14 +25,12 @@ app.use(cors({
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Ensure uploads directory exists
-const uploadsDir = path.join(__dirname, "uploads", "songs");
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
-}
+["uploads/songs", "uploads/covers"].forEach(dir => {
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+});
 
-// ✅ Serve MP3 files
-app.use("/uploads/songs", express.static(uploadsDir));
+app.use("/uploads/songs", express.static("uploads/songs"));
+app.use("/uploads/covers", express.static("uploads/covers"));
 
 // Routes
 app.use("/api/auth", authRoutes);
