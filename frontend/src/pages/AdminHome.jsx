@@ -28,55 +28,143 @@ export default function AdminHome() {
   }, []);
 
   return (
-    <div style={{ textAlign: "center", marginTop: "30px" }}>
-      <h2>Welcome Admin!</h2>
+     <div
+      style={{
+        height: "100vh",
+        width: "100%",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        background: "linear-gradient(to bottom right, #2b2d42, #8d99ae)",
+        padding: "20px",
+      }}
+    >
+      {/* MAIN WRAPPER */}
+      <div
+        style={{
+          width: "100%",
+          maxWidth: "900px",
+          background: "rgba(255, 255, 255, 0.1)",
+          backdropFilter: "blur(10px)",
+          padding: "30px",
+          borderRadius: "15px",
+          color: "white",
+          textAlign: "center",
+          boxShadow: "0 0 20px rgba(0,0,0,0.3)",
+        }}
+      >
+        <h1 style={{ marginBottom: "20px" }}>Admin Dashboard</h1>
 
-      <div style={{ marginTop: "20px" }}>
-        <button
-          onClick={() => setView("dashboard")}
-          style={{ padding: "10px 20px", marginRight: "10px" }}
-        >
-          Dashboard
-        </button>
-        <button
-          onClick={() => setView("songs")}
-          style={{ padding: "10px 20px", marginRight: "10px" }}
-        >
-          Manage Songs
-        </button>
-        <button
-          onClick={logout}
-          style={{ padding: "10px 20px", cursor: "pointer" }}
-        >
-          Logout
-        </button>
-      </div>
+        {/* BUTTONS */}
+        <div style={{ marginBottom: "25px" }}>
+          <button
+            onClick={() => setView("dashboard")}
+            style={{
+              padding: "12px 25px",
+              marginRight: "10px",
+              background: "#ef233c",
+              color: "white",
+              border: "none",
+              borderRadius: "8px",
+              cursor: "pointer",
+            }}
+          >
+            Dashboard
+          </button>
 
-      <div style={{ marginTop: "30px" }}>
+          <button
+            onClick={() => setView("songs")}
+            style={{
+              padding: "12px 25px",
+              marginRight: "10px",
+              background: "#d90429",
+              color: "white",
+              border: "none",
+              borderRadius: "8px",
+              cursor: "pointer",
+            }}
+          >
+            Manage Songs
+          </button>
+
+          <button
+            onClick={logout}
+            style={{
+              padding: "12px 25px",
+              background: "#000",
+              color: "white",
+              border: "none",
+              borderRadius: "8px",
+              cursor: "pointer",
+            }}
+          >
+            Logout
+          </button>
+        </div>
+
+        {/* DASHBOARD VIEW */}
         {view === "dashboard" && (
           <div>
-            <h3>Admin Dashboard</h3>
-            <div style={{ display: "flex", justifyContent: "center", gap: "30px", marginTop: "20px" }}>
-              <div style={{ border: "1px solid #ccc", padding: "20px", borderRadius: "10px", width: "150px" }}>
-                <h4>Total Users</h4>
-                <p>{stats.users}</p>
-              </div>
-              <div style={{ border: "1px solid #ccc", padding: "20px", borderRadius: "10px", width: "150px" }}>
-                <h4>Total Songs</h4>
-                <p>{stats.songs}</p>
-              </div>
-              <div style={{ border: "1px solid #ccc", padding: "20px", borderRadius: "10px", width: "150px" }}>
-                <h4>Subscription Plans</h4>
-                <p>{stats.subscriptions}</p>
-              </div>
-            </div>
+            <h2>Overview</h2>
 
-            <div style={{ marginTop: "30px" }}>
-              <p>Use the buttons above to manage songs or view other admin features.</p>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                gap: "25px",
+                marginTop: "25px",
+                flexWrap: "wrap",
+              }}
+            >
+              {/* CARD 1 */}
+              <div
+                style={{
+                  width: "200px",
+                  padding: "20px",
+                  background: "rgba(0,0,0,0.3)",
+                  borderRadius: "12px",
+                }}
+              >
+                <h3>Total Users</h3>
+                <p style={{ fontSize: "26px", fontWeight: "bold" }}>
+                  {stats.users}
+                </p>
+              </div>
+
+              {/* CARD 2 */}
+              <div
+                style={{
+                  width: "200px",
+                  padding: "20px",
+                  background: "rgba(0,0,0,0.3)",
+                  borderRadius: "12px",
+                }}
+              >
+                <h3>Total Songs</h3>
+                <p style={{ fontSize: "26px", fontWeight: "bold" }}>
+                  {stats.songs}
+                </p>
+              </div>
+
+              {/* CARD 3 */}
+              <div
+                style={{
+                  width: "200px",
+                  padding: "20px",
+                  background: "rgba(0,0,0,0.3)",
+                  borderRadius: "12px",
+                }}
+              >
+                <h3>Subscriptions</h3>
+                <p style={{ fontSize: "26px", fontWeight: "bold" }}>
+                  {stats.subscriptions}
+                </p>
+              </div>
             </div>
           </div>
         )}
 
+        {/* SONG MANAGEMENT VIEW */}
         {view === "songs" && <AdminSongs />}
       </div>
     </div>

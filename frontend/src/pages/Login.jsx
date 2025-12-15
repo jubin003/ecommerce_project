@@ -23,13 +23,84 @@ export default function Login() {
   };
 
   return (
-    <div style={{ textAlign: "center", marginTop: "50px" }}>
-      <h2>Login</h2>
-      <form onSubmit={handleLogin}>
-        <input type="email" placeholder="Email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} required /><br/><br/>
-        <input type="password" placeholder="Password" value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} required /><br/><br/>
-        <button type="submit">Login</button>
+<div style={{
+      height: "100vh",
+      width: "100vw",
+      background: "#0d0d0d",
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "center",
+      alignItems: "center",
+      color: "#fff",
+      fontFamily: "Poppins, sans-serif"
+    }}>
+      
+      <h1 style={{ marginBottom: "30px", fontSize: "32px" }}>Login</h1>
+
+      <form 
+        onSubmit={handleLogin}
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          width: "50%",
+          maxWidth: "600px",
+          minWidth: "350px"
+        }}
+      >
+        <input
+          type="email"
+          placeholder="Email"
+          value={form.email}
+          onChange={e => setForm({ ...form, email: e.target.value })}
+          required
+          style={{
+            padding: "15px",
+            marginBottom: "20px",
+            borderRadius: "10px",
+            border: "1px solid #333",
+            background: "#1a1a1a",
+            color: "white",
+            fontSize: "16px"
+          }}
+        />
+
+        <input
+          type="password"
+          placeholder="Password"
+          value={form.password}
+          onChange={e => setForm({ ...form, password: e.target.value })}
+          required
+          style={{
+            padding: "15px",
+            marginBottom: "20px",
+            borderRadius: "10px",
+            border: "1px solid #333",
+            background: "#1a1a1a",
+            color: "white",
+            fontSize: "16px"
+          }}
+        />
+
+        <button
+          type="submit"
+          style={{
+            padding: "15px",
+            borderRadius: "10px",
+            border: "none",
+            background: "#6C5CE7",
+            color: "white",
+            fontSize: "18px",
+            fontWeight: "bold",
+            cursor: "pointer",
+            transition: "0.2s"
+          }}
+          onMouseOver={(e) => (e.target.style.background = "#7d6ff3")}
+          onMouseOut={(e) => (e.target.style.background = "#6C5CE7")}
+        >
+          Login
+        </button>
       </form>
+
     </div>
   );
 }

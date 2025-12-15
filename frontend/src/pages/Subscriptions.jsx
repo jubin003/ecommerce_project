@@ -33,42 +33,99 @@ export default function SubscriptionInfo() {
   };
 
   return (
-    <div style={{ textAlign: "center", marginTop: "30px" }}>
-      <h1>Upgrade Your Experience</h1>
-      <p style={{ maxWidth: "600px", margin: "auto", marginBottom: "20px" }}>
-        Enjoy unlimited music streaming, create playlists, and access exclusive features with our subscription plans.
+    <div
+      style={{
+        height: "100vh",
+        width: "100vw",
+        background: "#0f0f0f",
+        color: "white",
+        display: "flex",
+        flexDirection: "column",
+        padding: "40px",
+        overflowY: "auto",
+        fontFamily: "Arial",
+      }}
+    >
+      <h1 style={{ textAlign: "center", marginBottom: "10px" }}>
+        Upgrade Your Experience
+      </h1>
+
+      <p
+        style={{
+          textAlign: "center",
+          maxWidth: "700px",
+          margin: "0 auto",
+          fontSize: "18px",
+          opacity: 0.8,
+          marginBottom: "40px",
+        }}
+      >
+        Unlock unlimited music streaming, create playlists, and enjoy ad-free listening with our subscription plans.
       </p>
 
-      <h2>Choose a Plan</h2>
-
-      {plans.length === 0 ? (
-        <p>No subscription plans available.</p>
-      ) : (
-        plans.map((plan) => (
-          <div
-            key={plan._id}
-            style={{
-              marginBottom: "20px",
-              border: "1px solid gray",
-              padding: "20px",
-              display: "inline-block",
-              width: "300px",
-              borderRadius: "10px",
-            }}
-          >
-            <h3>{plan.planName}</h3>
-            <p>Price: ${plan.price}</p>
-            <p>Duration: {plan.durationInDays} days</p>
-
-            <button
-              onClick={() => handleSubscribe(plan._id)}
-              style={{ padding: "10px 20px", marginTop: "10px" }}
+      {/* Subscription Grid */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+          gap: "25px",
+          width: "100%",
+          maxWidth: "1200px",
+          margin: "0 auto",
+        }}
+      >
+        {plans.length === 0 ? (
+          <p style={{ gridColumn: "1 / -1", textAlign: "center" }}>
+            No subscription plans available.
+          </p>
+        ) : (
+          plans.map((plan) => (
+            <div
+              key={plan._id}
+              style={{
+                background: "#171717",
+                borderRadius: "12px",
+                padding: "25px",
+                textAlign: "center",
+                border: "1px solid #222",
+                transition: "0.25s ease",
+                cursor: "pointer",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "scale(1.03)";
+                e.currentTarget.style.boxShadow = "0 0 15px rgba(0,255,100,0.2)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "scale(1)";
+                e.currentTarget.style.boxShadow = "none";
+              }}
             >
-              Subscribe
-            </button>
-          </div>
-        ))
-      )}
+              <h2 style={{ marginBottom: "15px" }}>{plan.planName}</h2>
+              <p style={{ fontSize: "22px", color: "#1db954", marginBottom: "10px" }}>
+                ${plan.price}
+              </p>
+              <p style={{ opacity: 0.8, marginBottom: "25px" }}>
+                Duration: {plan.durationInDays} days
+              </p>
+
+              <button
+                onClick={() => handleSubscribe(plan._id)}
+                style={{
+                  padding: "12px 25px",
+                  background: "#1db954",
+                  border: "none",
+                  color: "black",
+                  fontWeight: "bold",
+                  cursor: "pointer",
+                  borderRadius: "8px",
+                }}
+              >
+                Subscribe
+              </button>
+            </div>
+          ))
+        )}
+      </div>
     </div>
   );
 }

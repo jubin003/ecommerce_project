@@ -1,44 +1,51 @@
-import { useEffect, useState } from "react";
-import API from "../api";
+import { useEffect, useRef, useState } from "react";
+import API, { BASE_URL } from "../api";
 
 export default function Songs() {
   const [songs, setSongs] = useState([]);
   const [currentSong, setCurrentSong] = useState(null);
+  const audioRef = useRef(null);
 
   useEffect(() => {
     const fetchSongs = async () => {
-      try {
-        const res = await API.get("/songs");
-        setSongs(res.data);
-      } catch (err) {
-        console.log(err);
-      }
+      const res = await API.get("/songs");
+      setSongs(res.data);
     };
     fetchSongs();
   }, []);
 
+  useEffect(() => {
+    if (currentSong && audioRef.current) {
+      audioRef.current.load();
+      audioRef.current.play().catch(() => {});
+    }
+  }, [currentSong]);
+
   return (
-    <div style={{ textAlign: "center", marginTop: "30px" }}>
-      <h2>All Songs</h2>
-      {songs.length === 0 ? (
-        <p>No songs available.</p>
-      ) : (
-        songs.map(song => (
-          <div key={song._id} style={{ marginBottom: "15px" }}>
-            <strong>{song.title}</strong> by {song.artist} | Album: {song.album}{" "}
-            <button onClick={() => setCurrentSong(song)}>Play</button>
+    <div>
+      <h2>Songs</h2>
+
+      <div className="song-grid">
+        {songs.map((song) => (
+          <div key={song._id} className="song-card">
+            <h4>{song.title}</h4>
+
+            <button onClick={() => setCurrentSong(song)}>
+              ▶ Play
+            </button>
           </div>
-        ))
-      )}
+        ))}
+      </div>
 
       {currentSong && (
-        <div style={{ marginTop: "30px" }}>
-          <h3>Now Playing: {currentSong.title} by {currentSong.artist}</h3>
-          <audio controls src={currentSong.url} autoPlay>
-            Your browser does not support the audio element.
-          </audio>
-          <br/>
-          <button onClick={() => setCurrentSong(null)}>Stop</button>
+        <div className="player">
+          <p>Now Playing: {currentSong.title}</p>
+
+          <audio
+            ref={audioRef}
+            controls
+            src={`${BASE_URL}${currentSong.url}`}
+          />
         </div>
       )}
     </div>

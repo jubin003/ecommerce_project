@@ -38,9 +38,12 @@ export const assignSubscriptionToUser = async (req, res) => {
     user.subscribed = true;
     await user.save();
 
-    res.status(200).json({ message: "Subscribed successfully", subscription: { isActive: true } });
+    res.status(200).json({
+      message: "Subscribed successfully",
+      subscription: { isActive: true },
+    });
   } catch (err) {
-    console.log(err);
     res.status(500).json({ message: "Server error" });
   }
 };
+
