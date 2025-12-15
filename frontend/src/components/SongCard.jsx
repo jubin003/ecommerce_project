@@ -8,7 +8,11 @@ export default function SongCard({ song }) {
       <img src={song.coverArt || "https://via.placeholder.com/150"} alt={song.title} width="150" />
       <h4>{song.title}</h4>
       <p>{song.artist}</p>
-      <audio controls src={song.url} onPlay={() => setIsPlaying(true)} onPause={() => setIsPlaying(false)} />
+              <audio
+          controls
+          src={`http://localhost:5001${song.url}`}
+        />
+
     </div>
   );
 }

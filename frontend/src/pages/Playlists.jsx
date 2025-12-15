@@ -43,25 +43,21 @@ export default function Playlists() {
     }
   };
 
-  const handleCreate = async (e) => {
-    e.preventDefault();
-    if (!userId) return alert("Login first");
-    try {
-      const res = await API.post("/playlists/create", {
-        name,
-        description,
-        userId,
-        songs: selectedSongs
-      });
-      alert(res.data.message);
-      setName("");
-      setDescription("");
-      setSelectedSongs([]);
-      fetchPlaylists();
-    } catch (err) {
-      alert(err.response?.data?.message || "Error creating playlist");
-    }
-  };
+ const handleCreate = async (e) => {
+  e.preventDefault();
+  try {
+    const res = await API.post("/playlists/create", {
+      name,
+      description,
+      songs: selectedSongs,
+    });
+    alert(res.data.message);
+    fetchPlaylists();
+  } catch (err) {
+    alert(err.response?.data?.message);
+  }
+};
+
 
   return (
     <div style={{ textAlign: "center", marginTop: "30px" }}>

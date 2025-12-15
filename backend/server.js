@@ -36,6 +36,11 @@ app.use("/api/subscriptions", subscriptionRoutes);
 
 
 app.use("/api/playlists", playlistRoutes);
+app.use(
+  "/uploads/songs",
+  express.static(path.join(path.resolve(), "uploads/songs"))
+);
+
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URL)
