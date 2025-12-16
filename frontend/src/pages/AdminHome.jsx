@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { logout } from "../utils/auth";
 import AdminSongs from "./AdminSongs";
 import AdminVinyls from "./AdminVinyls";
+import AdminOrders from "./AdminOrders";
 import API from "../api";
 
 export default function AdminHome() {
@@ -29,7 +30,7 @@ export default function AdminHome() {
       }
     };
     fetchStats();
-  }, []);
+  }, [view]); // Refresh stats when view changes
 
   return (
     <div
@@ -99,6 +100,21 @@ export default function AdminHome() {
             }}
           >
             Manage Vinyls
+          </button>
+
+          <button
+            onClick={() => setView("orders")}
+            style={{
+              padding: "12px 25px",
+              marginRight: "10px",
+              background: view === "orders" ? "#d90429" : "#666",
+              color: "white",
+              border: "none",
+              borderRadius: "8px",
+              cursor: "pointer",
+            }}
+          >
+            Orders
           </button>
 
           <button
@@ -207,6 +223,9 @@ export default function AdminHome() {
 
         {/* Vinyl Management View */}
         {view === "vinyls" && <AdminVinyls />}
+
+        {/* Orders Management View */}
+        {view === "orders" && <AdminOrders />}
       </div>
     </div>
   );
