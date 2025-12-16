@@ -34,7 +34,7 @@ export const createOrder = async (req, res) => {
         });
       }
 
-      // Reduce vinyl quantity
+      // FIXED: Reduce vinyl quantity
       vinyl.quantity -= item.quantity;
       await vinyl.save();
 
@@ -118,10 +118,12 @@ export const updateOrderStatus = async (req, res) => {
       req.params.id,
       { status },
       { new: true }
-    ).populate({
-      path: "items.vinyl",
-      populate: { path: "song" },
-    });
+    )
+      .populate("user", "name email")
+      .populate({
+        path: "items.vinyl",
+        populate: { path: "song" },
+      });
 
     if (!order) {
       return res.status(404).json({ message: "Order not found" });
