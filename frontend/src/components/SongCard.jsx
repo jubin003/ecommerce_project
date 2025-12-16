@@ -1,10 +1,25 @@
 import { useState, useRef, useEffect } from "react";
+import API from "../api";
 
-export default function SongCard({ song, onPlay, isCurrentlyPlaying }) {
+export default function SongCard({ song, onPlay, isCurrentlyPlaying, onAddToCart }) {
   const [isPlaying, setIsPlaying] = useState(false);
+  const [vinyl, setVinyl] = useState(null);
+  const [showVinylInfo, setShowVinylInfo] = useState(false);
   const audioRef = useRef(null);
 
-    console.log("AUDIO URL:", `http://localhost:5001${song.url}`);
+  useEffect(() => {
+    // Fetch vinyl info for this song
+    const fetchVinyl = async () => {
+      try {
+        const res = await API.get(`/vinyls/song/${song._id}`);
+        setVinyl(res.data);
+      } catch (err) {
+        // Vinyl not available for this song
+        setVinyl(null);
+      }
+    };
+    fetchVinyl();
+  }, [song._id]);
 
   useEffect(() => {
     if (audioRef.current) {
@@ -31,9 +46,14 @@ export default function SongCard({ song, onPlay, isCurrentlyPlaying }) {
     }
   };
 
+  const handleAddToCart = () => {
+    if (vinyl && onAddToCart) {
+      onAddToCart(vinyl._id);
+    }
+  };
+
   return (
     <div
-    
       style={{
         border: "1px solid #333",
         borderRadius: "12px",
@@ -43,6 +63,7 @@ export default function SongCard({ song, onPlay, isCurrentlyPlaying }) {
         background: "#1a1a1a",
         transition: "transform 0.2s, box-shadow 0.2s",
         cursor: "pointer",
+        position: "relative",
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.transform = "translateY(-5px)";
@@ -53,6 +74,26 @@ export default function SongCard({ song, onPlay, isCurrentlyPlaying }) {
         e.currentTarget.style.boxShadow = "none";
       }}
     >
+      {/* Vinyl Badge */}
+      {vinyl && vinyl.quantity > 0 && (
+        <div
+          style={{
+            position: "absolute",
+            top: "10px",
+            right: "10px",
+            background: "#1db954",
+            color: "white",
+            padding: "4px 8px",
+            borderRadius: "12px",
+            fontSize: "10px",
+            fontWeight: "bold",
+            zIndex: 10,
+          }}
+        >
+          🎵 VINYL
+        </div>
+      )}
+
       {/* Cover Art Container */}
       <div
         style={{
@@ -65,17 +106,16 @@ export default function SongCard({ song, onPlay, isCurrentlyPlaying }) {
           background: "#2a2a2a",
         }}
       >
-              <img
-              src={
-                song.coverArt.startsWith("http")
-                  ? song.coverArt
-                  : `http://localhost:5001${song.coverArt}`
-              }
-              alt={song.title}
-              style={{ width: "100%", height: "100%", objectFit: "cover" }}
-            />
+        <img
+          src={
+            song.coverArt.startsWith("http")
+              ? song.coverArt
+              : `http://localhost:5001${song.coverArt}`
+          }
+          alt={song.title}
+          style={{ width: "100%", height: "100%", objectFit: "cover" }}
+        />
 
-        
         {/* Play/Pause Button Overlay */}
         <div
           onClick={handlePlayPause}
@@ -154,6 +194,46 @@ export default function SongCard({ song, onPlay, isCurrentlyPlaying }) {
         >
           {song.album}
         </p>
+      )}
+
+      {/* Vinyl Purchase Section */}
+      {vinyl && vinyl.quantity > 0 && (
+        <div style={{ marginTop: "12px", paddingTop: "12px", borderTop: "1px solid #333" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <div>
+              <p style={{ margin: 0, fontSize: "14px", color: "#1db954", fontWeight: "bold" }}>
+                ${vinyl.price}
+              </p>
+              <p style={{ margin: 0, fontSize: "11px", color: "#888" }}>
+                {vinyl.quantity} in stock
+              </p>
+            </div>
+            <button
+              onClick={handleAddToCart}
+              style={{
+                padding: "8px 12px",
+                background: "#1db954",
+                color: "white",
+                border: "none",
+                borderRadius: "6px",
+                fontSize: "12px",
+                fontWeight: "bold",
+                cursor: "pointer",
+                transition: "all 0.2s",
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.background = "#1ed760";
+                e.target.style.transform = "scale(1.05)";
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.background = "#1db954";
+                e.target.style.transform = "scale(1)";
+              }}
+            >
+              🛒 Add
+            </button>
+          </div>
+        </div>
       )}
 
       {/* Hidden Audio Element */}
