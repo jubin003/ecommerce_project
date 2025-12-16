@@ -1,24 +1,28 @@
-// frontend/src/pages/AdminHome.jsx
 import { useState, useEffect } from "react";
 import { logout } from "../utils/auth";
 import AdminSongs from "./AdminSongs";
+import AdminVinyls from "./AdminVinyls";
 import API from "../api";
 
 export default function AdminHome() {
-  const [view, setView] = useState("dashboard"); // 'dashboard' or 'songs'
-  const [stats, setStats] = useState({ users: 0, songs: 0, subscriptions: 0 });
+  const [view, setView] = useState("dashboard");
+  const [stats, setStats] = useState({ users: 0, songs: 0, subscriptions: 0, orders: 0, vinyls: 0 });
 
-  // Fetch basic stats for dashboard
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const usersRes = await API.get("/users"); // all users
-        const songsRes = await API.get("/songs"); // all songs
-        const subsRes = await API.get("/subscriptions"); // all subscription plans
+        const usersRes = await API.get("/users");
+        const songsRes = await API.get("/songs");
+        const subsRes = await API.get("/subscriptions");
+        const ordersRes = await API.get("/orders/all");
+        const vinylsRes = await API.get("/vinyls");
+        
         setStats({
           users: usersRes.data.length,
           songs: songsRes.data.length,
           subscriptions: subsRes.data.length,
+          orders: ordersRes.data.length,
+          vinyls: vinylsRes.data.length,
         });
       } catch (err) {
         console.log("Error fetching stats:", err.response?.data || err.message);
@@ -28,41 +32,36 @@ export default function AdminHome() {
   }, []);
 
   return (
-     <div
+    <div
       style={{
-        height: "100vh",
+        minHeight: "100vh",
         width: "100%",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
         background: "linear-gradient(to bottom right, #2b2d42, #8d99ae)",
         padding: "20px",
       }}
     >
-      {/* MAIN WRAPPER */}
       <div
         style={{
-          width: "100%",
-          maxWidth: "900px",
+          maxWidth: "1200px",
+          margin: "0 auto",
           background: "rgba(255, 255, 255, 0.1)",
           backdropFilter: "blur(10px)",
           padding: "30px",
           borderRadius: "15px",
           color: "white",
-          textAlign: "center",
           boxShadow: "0 0 20px rgba(0,0,0,0.3)",
         }}
       >
-        <h1 style={{ marginBottom: "20px" }}>Admin Dashboard</h1>
+        <h1 style={{ marginBottom: "20px", textAlign: "center" }}>Admin Dashboard</h1>
 
-        {/* BUTTONS */}
-        <div style={{ marginBottom: "25px" }}>
+        {/* Navigation Buttons */}
+        <div style={{ marginBottom: "25px", textAlign: "center" }}>
           <button
             onClick={() => setView("dashboard")}
             style={{
               padding: "12px 25px",
               marginRight: "10px",
-              background: "#ef233c",
+              background: view === "dashboard" ? "#ef233c" : "#666",
               color: "white",
               border: "none",
               borderRadius: "8px",
@@ -77,7 +76,7 @@ export default function AdminHome() {
             style={{
               padding: "12px 25px",
               marginRight: "10px",
-              background: "#d90429",
+              background: view === "songs" ? "#d90429" : "#666",
               color: "white",
               border: "none",
               borderRadius: "8px",
@@ -85,6 +84,21 @@ export default function AdminHome() {
             }}
           >
             Manage Songs
+          </button>
+
+          <button
+            onClick={() => setView("vinyls")}
+            style={{
+              padding: "12px 25px",
+              marginRight: "10px",
+              background: view === "vinyls" ? "#d90429" : "#666",
+              color: "white",
+              border: "none",
+              borderRadius: "8px",
+              cursor: "pointer",
+            }}
+          >
+            Manage Vinyls
           </button>
 
           <button
@@ -102,27 +116,25 @@ export default function AdminHome() {
           </button>
         </div>
 
-        {/* DASHBOARD VIEW */}
+        {/* Dashboard View */}
         {view === "dashboard" && (
           <div>
-            <h2>Overview</h2>
+            <h2 style={{ textAlign: "center", marginBottom: "30px" }}>Overview</h2>
 
             <div
               style={{
-                display: "flex",
-                justifyContent: "center",
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
                 gap: "25px",
                 marginTop: "25px",
-                flexWrap: "wrap",
               }}
             >
-              {/* CARD 1 */}
               <div
                 style={{
-                  width: "200px",
                   padding: "20px",
                   background: "rgba(0,0,0,0.3)",
                   borderRadius: "12px",
+                  textAlign: "center",
                 }}
               >
                 <h3>Total Users</h3>
@@ -131,13 +143,12 @@ export default function AdminHome() {
                 </p>
               </div>
 
-              {/* CARD 2 */}
               <div
                 style={{
-                  width: "200px",
                   padding: "20px",
                   background: "rgba(0,0,0,0.3)",
                   borderRadius: "12px",
+                  textAlign: "center",
                 }}
               >
                 <h3>Total Songs</h3>
@@ -146,13 +157,40 @@ export default function AdminHome() {
                 </p>
               </div>
 
-              {/* CARD 3 */}
               <div
                 style={{
-                  width: "200px",
                   padding: "20px",
                   background: "rgba(0,0,0,0.3)",
                   borderRadius: "12px",
+                  textAlign: "center",
+                }}
+              >
+                <h3>Vinyls</h3>
+                <p style={{ fontSize: "26px", fontWeight: "bold" }}>
+                  {stats.vinyls}
+                </p>
+              </div>
+
+              <div
+                style={{
+                  padding: "20px",
+                  background: "rgba(0,0,0,0.3)",
+                  borderRadius: "12px",
+                  textAlign: "center",
+                }}
+              >
+                <h3>Orders</h3>
+                <p style={{ fontSize: "26px", fontWeight: "bold" }}>
+                  {stats.orders}
+                </p>
+              </div>
+
+              <div
+                style={{
+                  padding: "20px",
+                  background: "rgba(0,0,0,0.3)",
+                  borderRadius: "12px",
+                  textAlign: "center",
                 }}
               >
                 <h3>Subscriptions</h3>
@@ -164,8 +202,11 @@ export default function AdminHome() {
           </div>
         )}
 
-        {/* SONG MANAGEMENT VIEW */}
+        {/* Song Management View */}
         {view === "songs" && <AdminSongs />}
+
+        {/* Vinyl Management View */}
+        {view === "vinyls" && <AdminVinyls />}
       </div>
     </div>
   );

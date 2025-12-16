@@ -5,6 +5,9 @@ import AdminHome from "./pages/AdminHome";
 import UserHome from "./pages/UserHome";
 import ProtectedRoute from "./components/ProtectedRoute";
 import SubscriptionInfo from "./pages/Subscriptions";
+import Cart from "./pages/Cart";
+import Checkout from "./pages/Checkout";
+import Orders from "./pages/Orders";
 
 function App() {
   return (
@@ -14,7 +17,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        {/* User Home (normal user) */}
+        {/* User Routes */}
         <Route
           path="/user-home"
           element={
@@ -23,8 +26,40 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/subscriptions"
+          element={
+            <ProtectedRoute allowedRoles={["user"]}>
+              <SubscriptionInfo />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/cart"
+          element={
+            <ProtectedRoute allowedRoles={["user"]}>
+              <Cart />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/checkout"
+          element={
+            <ProtectedRoute allowedRoles={["user"]}>
+              <Checkout />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/orders"
+          element={
+            <ProtectedRoute allowedRoles={["user"]}>
+              <Orders />
+            </ProtectedRoute>
+          }
+        />
 
-        {/* Admin Home */}
+        {/* Admin Routes */}
         <Route
           path="/admin-home"
           element={
@@ -33,14 +68,7 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route path="/subscriptions" element={
-        <ProtectedRoute allowedRoles={["user"]}>
-        <SubscriptionInfo />
-        </ProtectedRoute>} 
-        />
       </Routes>
-      
-
     </BrowserRouter>
   );
 }

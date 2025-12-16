@@ -2,17 +2,13 @@ import { useEffect, useState } from "react";
 import API from "../api";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../utils/auth";
-import SongCard from "../components/SongCard"; // ✅ IMPORT
+import SongCard from "../components/SongCard";
 
 export default function UserHome() {
   const [songs, setSongs] = useState([]);
   const [subscription, setSubscription] = useState(null);
-  const [playlistName, setPlaylistName] = useState("");
-  const [playlistDescription, setPlaylistDescription] = useState("");
-  const [playlists, setPlaylists] = useState([]);
-  const [selectedSongs, setSelectedSongs] = useState([]);
-
-  const [currentSongId, setCurrentSongId] = useState(null); // ✅ NEW
+  const [cartItemCount, setCartItemCount] = useState(0);
+  const [currentSongId, setCurrentSongId] = useState(null);
 
   const userId = localStorage.getItem("userId");
   const navigate = useNavigate();
@@ -43,188 +39,179 @@ export default function UserHome() {
     fetchSubscription();
   }, [userId]);
 
-  // Fetch playlists
+  // Fetch cart count
   useEffect(() => {
-    const fetchPlaylists = async () => {
+    const fetchCartCount = async () => {
       try {
-        const res = await API.get(`/playlists/user/${userId}`);
-        setPlaylists(res.data);
+        const res = await API.get(`/cart/${userId}`);
+        const count = res.data.items?.reduce((sum, item) => sum + item.quantity, 0) || 0;
+        setCartItemCount(count);
       } catch (err) {
-        console.log(err.response?.data || err.message);
+        console.log(err);
       }
     };
-    if (subscription?.isActive) {
-      fetchPlaylists();
-    }
-  }, [userId, subscription]);
+    fetchCartCount();
+  }, [userId]);
 
   const isSubscribed = subscription?.isActive === true;
 
-  // ✅ PLAY HANDLER (only one song at a time)
   const handlePlaySong = (songId) => {
     setCurrentSongId(songId);
   };
 
-  // Toggle song selection
-  const handleSongToggle = (songId) => {
-    if (selectedSongs.includes(songId)) {
-      setSelectedSongs(selectedSongs.filter(id => id !== songId));
-    } else {
-      setSelectedSongs([...selectedSongs, songId]);
-    }
-  };
-
-  // Create playlist
-  const handleCreatePlaylist = async (e) => {
-    e.preventDefault();
-    if (!playlistName) return alert("Enter playlist name");
-
+  const handleAddToCart = async (vinylId) => {
     try {
-      const res = await API.post(`/playlists/create`, {
+      await API.post("/cart/add", {
         userId,
-        name: playlistName,
-        description: playlistDescription,
-        songs: selectedSongs,
+        vinylId,
+        quantity: 1,
       });
-
-      alert(res.data.message);
-      setPlaylists([...playlists, res.data.playlist]);
-      setPlaylistName("");
-      setPlaylistDescription("");
-      setSelectedSongs([]);
+      alert("Added to cart!");
+      // Update cart count
+      const res = await API.get(`/cart/${userId}`);
+      const count = res.data.items?.reduce((sum, item) => sum + item.quantity, 0) || 0;
+      setCartItemCount(count);
     } catch (err) {
-      console.log(err.response?.data || err.message);
-      alert(err.response?.data?.message || "Failed to create playlist");
+      alert(err.response?.data?.message || "Failed to add to cart");
     }
   };
 
   return (
-    <div style={{ textAlign: "center", marginTop: "30px" }}>
-      <h2>Welcome User</h2>
-
-      <button
-        onClick={logout}
-        style={{ marginTop: "20px", padding: "10px 20px", cursor: "pointer" }}
+    <div style={{ minHeight: "100vh", background: "#0f0f0f", color: "white" }}>
+      {/* Header/Navigation */}
+      <div
+        style={{
+          background: "#1a1a1a",
+          padding: "20px 40px",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          borderBottom: "1px solid #333",
+        }}
       >
-        Logout
-      </button>
+        <h2 style={{ margin: 0 }}>Music Store</h2>
+        <div style={{ display: "flex", gap: "15px", alignItems: "center" }}>
+          {/* Cart Button */}
+          <button
+            onClick={() => navigate("/cart")}
+            style={{
+              padding: "10px 20px",
+              background: "#333",
+              color: "white",
+              border: "none",
+              borderRadius: "8px",
+              cursor: "pointer",
+              position: "relative",
+              fontSize: "16px",
+            }}
+          >
+            🛒 Cart
+            {cartItemCount > 0 && (
+              <span
+                style={{
+                  position: "absolute",
+                  top: "-8px",
+                  right: "-8px",
+                  background: "#1db954",
+                  color: "white",
+                  borderRadius: "50%",
+                  width: "24px",
+                  height: "24px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "12px",
+                  fontWeight: "bold",
+                }}
+              >
+                {cartItemCount}
+              </span>
+            )}
+          </button>
 
-      {/* Subscription status */}
-      <div style={{ marginTop: "20px", marginBottom: "20px" }}>
-        {isSubscribed ? (
-          <p style={{ color: "green", fontWeight: "bold" }}>
-            ✓ You have an active subscription
-          </p>
-        ) : (
-          <div>
-            <p style={{ color: "orange" }}>You don't have a subscription yet</p>
-            <button
-              onClick={() => navigate("/subscriptions")}
-              style={{
-                padding: "10px 20px",
-                backgroundColor: "#1db954",
-                color: "white",
-                border: "none",
-                cursor: "pointer",
-              }}
-            >
-              Buy Subscription
-            </button>
-          </div>
-        )}
-      </div>
+          {/* Orders Button */}
+          <button
+            onClick={() => navigate("/orders")}
+            style={{
+              padding: "10px 20px",
+              background: "#333",
+              color: "white",
+              border: "none",
+              borderRadius: "8px",
+              cursor: "pointer",
+            }}
+          >
+            📦 Orders
+          </button>
 
-      <h3>Songs</h3>
-
-      {/* ✅ SONG CARD USAGE */}
-      <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
-        {songs.length === 0 ? (
-          <p>No songs available</p>
-        ) : (
-          songs.map((song) => (
-            <SongCard
-              key={song._id}
-              song={song}
-              onPlay={handlePlaySong}
-              isCurrentlyPlaying={currentSongId === song._id}
-            />
-          ))
-        )}
-      </div>
-
-      {/* Playlist section */}
-      {isSubscribed && (
-        <div
-          style={{
-            marginTop: "40px",
-            maxWidth: "800px",
-            margin: "40px auto",
-            textAlign: "left",
-            padding: "20px",
-            border: "1px solid #ccc",
-            borderRadius: "8px",
-          }}
-        >
-          <h3>Create Playlist</h3>
-
-          <form onSubmit={handleCreatePlaylist}>
-            <input
-              type="text"
-              placeholder="Playlist Name"
-              value={playlistName}
-              onChange={(e) => setPlaylistName(e.target.value)}
-              style={{ width: "100%", padding: "8px", marginBottom: "10px" }}
-              required
-            />
-
-            <input
-              type="text"
-              placeholder="Description (optional)"
-              value={playlistDescription}
-              onChange={(e) => setPlaylistDescription(e.target.value)}
-              style={{ width: "100%", padding: "8px", marginBottom: "15px" }}
-            />
-
-            <h4>Select Songs</h4>
-
-            <div
-              style={{
-                maxHeight: "200px",
-                overflowY: "auto",
-                border: "1px solid #ddd",
-                padding: "10px",
-                marginBottom: "15px",
-              }}
-            >
-              {songs.map((song) => (
-                <label key={song._id} style={{ display: "block", marginBottom: "8px" }}>
-                  <input
-                    type="checkbox"
-                    checked={selectedSongs.includes(song._id)}
-                    onChange={() => handleSongToggle(song._id)}
-                    style={{ marginRight: "8px" }}
-                  />
-                  {song.title} – {song.artist}
-                </label>
-              ))}
-            </div>
-
-            <button
-              type="submit"
-              style={{
-                padding: "10px 20px",
-                backgroundColor: "#1db954",
-                color: "white",
-                border: "none",
-                cursor: "pointer",
-                borderRadius: "4px",
-              }}
-            >
-              Create Playlist
-            </button>
-          </form>
+          {/* Logout Button */}
+          <button
+            onClick={logout}
+            style={{
+              padding: "10px 20px",
+              background: "#d32f2f",
+              color: "white",
+              border: "none",
+              borderRadius: "8px",
+              cursor: "pointer",
+            }}
+          >
+            Logout
+          </button>
         </div>
-      )}
+      </div>
+
+      {/* Main Content */}
+      <div style={{ padding: "40px" }}>
+        {/* Subscription status */}
+        <div style={{ marginBottom: "30px", textAlign: "center" }}>
+          {isSubscribed ? (
+            <p style={{ color: "#1db954", fontWeight: "bold", fontSize: "18px" }}>
+              ✓ Premium Member - Create Playlists & Enjoy Ad-Free Music
+            </p>
+          ) : (
+            <div>
+              <p style={{ color: "orange", marginBottom: "15px", fontSize: "18px" }}>
+                Upgrade to Premium for unlimited features!
+              </p>
+              <button
+                onClick={() => navigate("/subscriptions")}
+                style={{
+                  padding: "12px 30px",
+                  backgroundColor: "#1db954",
+                  color: "white",
+                  border: "none",
+                  cursor: "pointer",
+                  borderRadius: "8px",
+                  fontSize: "16px",
+                  fontWeight: "bold",
+                }}
+              >
+                View Plans
+              </button>
+            </div>
+          )}
+        </div>
+
+        <h3 style={{ marginBottom: "20px" }}>Browse Music & Vinyls</h3>
+
+        {/* Song Cards */}
+        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
+          {songs.length === 0 ? (
+            <p>No songs available</p>
+          ) : (
+            songs.map((song) => (
+              <SongCard
+                key={song._id}
+                song={song}
+                onPlay={handlePlaySong}
+                isCurrentlyPlaying={currentSongId === song._id}
+                onAddToCart={handleAddToCart}
+              />
+            ))
+          )}
+        </div>
+      </div>
     </div>
   );
 }
