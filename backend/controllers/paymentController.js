@@ -10,6 +10,15 @@ export const initializeKhaltiPaymentController = async (req, res) => {
   try {
     const { userId, shippingAddress, website_url } = req.body;
 
+    console.log("=== Payment Initialization Started ===");
+
+    if (!userId || !shippingAddress) {
+      return res.status(400).json({
+        success: false,
+        message: "User ID and shipping address are required",
+      });
+    }
+
     // Get user's cart
     const cart = await Cart.findOne({ user: userId }).populate({
       path: "items.vinyl",
@@ -46,7 +55,6 @@ export const initializeKhaltiPaymentController = async (req, res) => {
 
       totalAmount += vinyl.price * item.quantity;
 
-      // Create purchased vinyl records
       const purchasedVinyl = await PurchasedVinyl.create({
         user: userId,
         vinyl: item.vinyl._id,
@@ -73,14 +81,27 @@ export const initializeKhaltiPaymentController = async (req, res) => {
       status: "pending",
     });
 
+    console.log("Order created:", order._id);
+
     // Initialize Khalti payment
+    const amountInPaisa = Math.round(totalAmount * 100);
+    const returnUrl = `${process.env.BACKEND_URI}/api/payment/complete-khalti-payment`;
+    const websiteUrl = website_url || process.env.FRONTEND_URI;
+
+    console.log("Initializing Khalti payment...");
+    console.log("Amount:", amountInPaisa, "paisa");
+
     const paymentInitiate = await initializeKhaltiPayment({
-      amount: totalAmount * 100, // Convert to paisa
+      amount: amountInPaisa,
       purchase_order_id: order._id.toString(),
       purchase_order_name: `Order ${order._id}`,
-      return_url: `${process.env.BACKEND_URI || "http://localhost:5001"}/api/payment/complete-khalti-payment`,
-      website_url: website_url || "http://localhost:5173",
+      return_url: returnUrl,
+      website_url: websiteUrl,
     });
+
+    if (!paymentInitiate || !paymentInitiate.pidx) {
+      throw new Error("Khalti did not return a valid pidx");
+    }
 
     // Create payment record
     await Payment.create({
@@ -88,10 +109,12 @@ export const initializeKhaltiPaymentController = async (req, res) => {
       user: userId,
       order: order._id,
       purchasedVinyls: purchasedVinylsData.map((pv) => pv._id),
-      amount: totalAmount * 100,
+      amount: amountInPaisa,
       paymentGateway: "khalti",
       status: "pending",
     });
+
+    console.log("=== Payment Initialization Successful ===");
 
     res.json({
       success: true,
@@ -100,7 +123,10 @@ export const initializeKhaltiPaymentController = async (req, res) => {
       purchasedVinyls: purchasedVinylsData,
     });
   } catch (error) {
-    console.error("Error initializing Khalti payment:", error);
+    console.error("=== Payment Initialization Error ===");
+    console.error("Error:", error.message);
+    console.error("Details:", error.response?.data);
+    
     res.status(500).json({
       success: false,
       message: "Failed to initialize payment",
@@ -121,34 +147,26 @@ export const completeKhaltiPayment = async (req, res) => {
     transaction_id,
   } = req.query;
 
+  console.log("=== Payment Verification Started ===");
+
   try {
-    // Verify payment with Khalti
     const paymentInfo = await verifyKhaltiPayment(pidx);
 
-    // Check if payment is completed and details match
     if (
       paymentInfo?.status !== "Completed" ||
       paymentInfo.transaction_id !== transaction_id ||
       Number(paymentInfo.total_amount) !== Number(amount)
     ) {
-      return res.status(400).json({
-        success: false,
-        message: "Payment verification failed",
-        paymentInfo,
-      });
+      console.error("Payment verification failed");
+      return res.redirect(`${process.env.FRONTEND_URI}/payment-failed`);
     }
 
-    // Find the payment record
     const payment = await Payment.findOne({ pidx });
-
     if (!payment) {
-      return res.status(400).json({
-        success: false,
-        message: "Payment record not found",
-      });
+      return res.redirect(`${process.env.FRONTEND_URI}/payment-failed`);
     }
 
-    // Update payment record
+    // Update payment
     await Payment.findByIdAndUpdate(payment._id, {
       $set: {
         transactionId: transaction_id,
@@ -158,52 +176,42 @@ export const completeKhaltiPayment = async (req, res) => {
       },
     });
 
-    // Update order status
+    // Update order
     const order = await Order.findByIdAndUpdate(
       purchase_order_id,
-      {
-        $set: {
-          status: "processing",
-        },
-      },
+      { $set: { status: "processing" } },
       { new: true }
     ).populate({
       path: "items.vinyl",
       populate: { path: "song" },
     });
 
-    // Update purchased vinyl records
+    // Update purchased vinyls
     await PurchasedVinyl.updateMany(
       { _id: { $in: payment.purchasedVinyls } },
-      {
-        $set: {
-          status: "completed",
-        },
-      }
+      { $set: { status: "completed" } }
     );
 
-    // Reduce vinyl stock quantities
+    // Reduce vinyl stock
     for (const item of order.items) {
       await Vinyl.findByIdAndUpdate(item.vinyl._id, {
         $inc: { quantity: -item.quantity },
       });
     }
 
-    // Clear user's cart
+    // Clear cart
     await Cart.findOneAndUpdate(
       { user: order.user },
-      {
-        $set: {
-          items: [],
-        },
-      }
+      { $set: { items: [] } }
     );
 
-    // Redirect to success page
-    res.redirect(`${process.env.FRONTEND_URI || "http://localhost:5173"}/payment-success?orderId=${order._id}`);
+    console.log("=== Payment Successful ===");
+
+    res.redirect(`${process.env.FRONTEND_URI}/payment-success?orderId=${order._id}`);
   } catch (error) {
-    console.error("Error completing Khalti payment:", error);
-    res.redirect(`${process.env.FRONTEND_URI || "http://localhost:5173"}/payment-failed`);
+    console.error("=== Payment Verification Error ===");
+    console.error("Error:", error.message);
+    res.redirect(`${process.env.FRONTEND_URI}/payment-failed`);
   }
 };
 
@@ -240,5 +248,5 @@ export const getPaymentDetails = async (req, res) => {
       message: "Failed to fetch payment details",
       error: error.message,
     });
-  }
-};
+  } 
+}

@@ -5,9 +5,11 @@ const paymentSchema = new mongoose.Schema(
     transactionId: {
       type: String,
       unique: true,
+      sparse: true, // IMPORTANT: This allows multiple null values
     },
     pidx: {
       type: String,
+      required: true,
       unique: true,
     },
     user: {

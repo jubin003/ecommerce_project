@@ -4,22 +4,30 @@ import API from "../api";
 export default function SongCard({ song, onPlay, isCurrentlyPlaying, onAddToCart }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [vinyl, setVinyl] = useState(null);
-  const [showVinylInfo, setShowVinylInfo] = useState(false);
+  const [vinylLoading, setVinylLoading] = useState(true);
+  const [vinylError, setVinylError] = useState(null);
   const audioRef = useRef(null);
 
   useEffect(() => {
     // Fetch vinyl info for this song
     const fetchVinyl = async () => {
       try {
+        setVinylLoading(true);
+        setVinylError(null);
         const res = await API.get(`/vinyls/song/${song._id}`);
+        console.log(`Vinyl data for ${song.title}:`, res.data);
         setVinyl(res.data);
       } catch (err) {
         // Vinyl not available for this song
+        console.log(`No vinyl found for song ${song.title}:`, err.response?.status);
+        setVinylError(err.response?.status === 404 ? "No vinyl available" : "Error loading vinyl");
         setVinyl(null);
+      } finally {
+        setVinylLoading(false);
       }
     };
     fetchVinyl();
-  }, [song._id]);
+  }, [song._id, song.title]);
 
   useEffect(() => {
     if (audioRef.current) {
@@ -48,9 +56,12 @@ export default function SongCard({ song, onPlay, isCurrentlyPlaying, onAddToCart
 
   const handleAddToCart = () => {
     if (vinyl && onAddToCart) {
+      console.log("Adding to cart:", vinyl);
       onAddToCart(vinyl._id);
     }
   };
+
+  const hasVinylAvailable = vinyl && vinyl.quantity > 0;
 
   return (
     <div
@@ -75,7 +86,7 @@ export default function SongCard({ song, onPlay, isCurrentlyPlaying, onAddToCart
       }}
     >
       {/* Vinyl Badge */}
-      {vinyl && vinyl.quantity > 0 && (
+      {hasVinylAvailable && (
         <div
           style={{
             position: "absolute",
@@ -196,8 +207,21 @@ export default function SongCard({ song, onPlay, isCurrentlyPlaying, onAddToCart
         </p>
       )}
 
+      {/* Debug Info (Remove in production) */}
+      {vinylLoading && (
+        <div style={{ marginTop: "12px", paddingTop: "12px", borderTop: "1px solid #333" }}>
+          <p style={{ margin: 0, fontSize: "12px", color: "#888" }}>Loading vinyl info...</p>
+        </div>
+      )}
+
+      {vinylError && !vinylLoading && (
+        <div style={{ marginTop: "12px", paddingTop: "12px", borderTop: "1px solid #333" }}>
+          <p style={{ margin: 0, fontSize: "12px", color: "#888" }}>{vinylError}</p>
+        </div>
+      )}
+
       {/* Vinyl Purchase Section */}
-      {vinyl && vinyl.quantity > 0 && (
+      {hasVinylAvailable && (
         <div style={{ marginTop: "12px", paddingTop: "12px", borderTop: "1px solid #333" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <div>
@@ -233,6 +257,15 @@ export default function SongCard({ song, onPlay, isCurrentlyPlaying, onAddToCart
               🛒 Add
             </button>
           </div>
+        </div>
+      )}
+
+      {/* Show message if vinyl exists but out of stock */}
+      {vinyl && vinyl.quantity === 0 && (
+        <div style={{ marginTop: "12px", paddingTop: "12px", borderTop: "1px solid #333" }}>
+          <p style={{ margin: 0, fontSize: "12px", color: "#d32f2f", textAlign: "center" }}>
+            Out of Stock
+          </p>
         </div>
       )}
 
