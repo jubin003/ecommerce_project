@@ -1,16 +1,19 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import API from "../api";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../utils/auth";
 import SongCard from "../components/SongCard";
+import Snowfall from "react-snowfall";
 
 export default function UserHome() {
   const [songs, setSongs] = useState([]);
   const [playlists, setPlaylists] = useState([]);
   const [subscription, setSubscription] = useState(null);
   const [cartItemCount, setCartItemCount] = useState(0);
-  const [currentSongId, setCurrentSongId] = useState(null);
-  const [view, setView] = useState("browse"); // 'browse' or 'playlists'
+  const [currentSong, setCurrentSong] = useState(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [view, setView] = useState("browse");
+  const audioRef = useRef(null);
   
   // Playlist creation form
   const [showCreatePlaylist, setShowCreatePlaylist] = useState(false);
@@ -75,10 +78,33 @@ export default function UserHome() {
     fetchCartCount();
   }, [userId]);
 
+  // Handle audio playback
+  useEffect(() => {
+    if (currentSong && audioRef.current) {
+      audioRef.current.load();
+      if (isPlaying) {
+        audioRef.current.play().catch(err => console.log("Play error:", err));
+      }
+    }
+  }, [currentSong, isPlaying]);
+
   const isSubscribed = subscription?.isActive === true;
 
-  const handlePlaySong = (songId) => {
-    setCurrentSongId(songId);
+  const handlePlaySong = (song) => {
+    setCurrentSong(song);
+    setIsPlaying(true);
+  };
+
+  const togglePlayPause = () => {
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.pause();
+        setIsPlaying(false);
+      } else {
+        audioRef.current.play().catch(err => console.log("Play error:", err));
+        setIsPlaying(true);
+      }
+    }
   };
 
   const handleAddToCart = async (vinylId) => {
@@ -130,7 +156,8 @@ export default function UserHome() {
   };
 
   return (
-    <div style={{ minHeight: "100vh", background: "#0f0f0f", color: "white" }}>
+    <div style={{ minHeight: "100vh", background: "#0f0f0f", color: "white", paddingBottom: currentSong ? "100px" : "0" }}>
+      <Snowfall color="#90D5FF"/>
       {/* Header/Navigation */}
       <div
         style={{
@@ -286,8 +313,8 @@ export default function UserHome() {
                   <SongCard
                     key={song._id}
                     song={song}
-                    onPlay={handlePlaySong}
-                    isCurrentlyPlaying={currentSongId === song._id}
+                    onPlay={() => handlePlaySong(song)}
+                    isCurrentlyPlaying={currentSong?._id === song._id && isPlaying}
                     onAddToCart={handleAddToCart}
                   />
                 ))
@@ -443,16 +470,17 @@ export default function UserHome() {
                       {playlist.songs?.map((song) => (
                         <div
                           key={song._id}
-                          onClick={() => handlePlaySong(song._id)}
+                          onClick={() => handlePlaySong(song)}
                           style={{
                             display: "flex",
                             alignItems: "center",
                             gap: "10px",
                             padding: "8px",
-                            background: "#0f0f0f",
+                            background: currentSong?._id === song._id ? "#2a2a2a" : "#0f0f0f",
                             borderRadius: "6px",
                             marginBottom: "8px",
                             cursor: "pointer",
+                            border: currentSong?._id === song._id ? "2px solid #1db954" : "2px solid transparent",
                           }}
                         >
                           <img
@@ -464,7 +492,9 @@ export default function UserHome() {
                             <p style={{ margin: 0, fontSize: "13px", fontWeight: "bold" }}>{song.title}</p>
                             <p style={{ margin: 0, fontSize: "11px", color: "#b3b3b3" }}>{song.artist}</p>
                           </div>
-                          <span style={{ fontSize: "18px" }}>▶</span>
+                          <span style={{ fontSize: "18px", color: currentSong?._id === song._id && isPlaying ? "#1db954" : "white" }}>
+                            {currentSong?._id === song._id && isPlaying ? "⏸" : "▶"}
+                          </span>
                         </div>
                       ))}
                     </div>
@@ -475,6 +505,89 @@ export default function UserHome() {
           </div>
         )}
       </div>
+
+      {/* Global Audio Player */}
+      {currentSong && (
+        <div
+          style={{
+            position: "fixed",
+            bottom: 0,
+            left: 0,
+            right: 0,
+            background: "#181818",
+            padding: "15px 30px",
+            borderTop: "2px solid #1db954",
+            display: "flex",
+            alignItems: "center",
+            gap: "20px",
+            zIndex: 1000,
+          }}
+        >
+          {/* Album Art */}
+          <img
+            src={currentSong.coverArt?.startsWith("http") ? currentSong.coverArt : `http://localhost:5001${currentSong.coverArt}`}
+            alt={currentSong.title}
+            style={{ width: "60px", height: "60px", borderRadius: "6px", objectFit: "cover" }}
+          />
+
+          {/* Song Info */}
+          <div style={{ flex: 1 }}>
+            <h4 style={{ margin: "0 0 5px 0", color: "white", fontSize: "16px" }}>{currentSong.title}</h4>
+            <p style={{ margin: 0, color: "#b3b3b3", fontSize: "14px" }}>{currentSong.artist}</p>
+          </div>
+
+          {/* Play/Pause Button */}
+          <button
+            onClick={togglePlayPause}
+            style={{
+              width: "50px",
+              height: "50px",
+              borderRadius: "50%",
+              background: "#1db954",
+              border: "none",
+              color: "white",
+              fontSize: "20px",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            {isPlaying ? "⏸" : "▶"}
+          </button>
+
+          {/* Audio Element with Controls */}
+          <audio
+            ref={audioRef}
+            src={`http://localhost:5001${currentSong.url}`}
+            controls
+            onEnded={() => setIsPlaying(false)}
+            onPlay={() => setIsPlaying(true)}
+            onPause={() => setIsPlaying(false)}
+            style={{ flex: 1, maxWidth: "400px" }}
+          />
+
+          {/* Close Button */}
+          <button
+            onClick={() => {
+              setCurrentSong(null);
+              setIsPlaying(false);
+            }}
+            style={{
+              width: "30px",
+              height: "30px",
+              borderRadius: "50%",
+              background: "#333",
+              border: "none",
+              color: "white",
+              fontSize: "16px",
+              cursor: "pointer",
+            }}
+          >
+            ✕
+          </button>
+        </div>
+      )}
     </div>
   );
 }
