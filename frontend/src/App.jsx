@@ -8,6 +8,8 @@ import SubscriptionInfo from "./pages/Subscriptions";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import Orders from "./pages/Orders";
+import PaymentSuccess from "./pages/PaymentSuccess";
+import PaymentFailed from "./pages/PaymentFailed";
 
 function App() {
   return (
@@ -58,6 +60,8 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route path="/payment-success" element={<PaymentSuccess />} />
+        <Route path="/payment-failed" element={<PaymentFailed />} />
 
         {/* Admin Routes */}
         <Route
