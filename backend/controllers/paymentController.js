@@ -84,7 +84,7 @@ export const initializeKhaltiPaymentController = async (req, res) => {
     console.log("Order created:", order._id);
 
     // Initialize Khalti payment
-    const amountInPaisa = Math.round(totalAmount * 100);
+    const amountInPaisa = totalAmount;
     const returnUrl = `${process.env.BACKEND_URI}/api/payment/complete-khalti-payment`;
     const websiteUrl = website_url || process.env.FRONTEND_URI;
 

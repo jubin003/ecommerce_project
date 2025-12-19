@@ -7,21 +7,19 @@ import API from "../api";
 
 export default function AdminHome() {
   const [view, setView] = useState("dashboard");
-  const [stats, setStats] = useState({ users: 0, songs: 0, subscriptions: 0, orders: 0, vinyls: 0 });
+  const [stats, setStats] = useState({ users: 0, songs: 0, orders: 0, vinyls: 0 });
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
         const usersRes = await API.get("/users");
         const songsRes = await API.get("/songs");
-        const subsRes = await API.get("/subscriptions");
         const ordersRes = await API.get("/orders/all");
         const vinylsRes = await API.get("/vinyls");
         
         setStats({
           users: usersRes.data.length,
           songs: songsRes.data.length,
-          subscriptions: subsRes.data.length,
           orders: ordersRes.data.length,
           vinyls: vinylsRes.data.length,
         });
@@ -198,20 +196,6 @@ export default function AdminHome() {
                 <h3>Orders</h3>
                 <p style={{ fontSize: "26px", fontWeight: "bold" }}>
                   {stats.orders}
-                </p>
-              </div>
-
-              <div
-                style={{
-                  padding: "20px",
-                  background: "rgba(0,0,0,0.3)",
-                  borderRadius: "12px",
-                  textAlign: "center",
-                }}
-              >
-                <h3>Subscriptions</h3>
-                <p style={{ fontSize: "26px", fontWeight: "bold" }}>
-                  {stats.subscriptions}
                 </p>
               </div>
             </div>

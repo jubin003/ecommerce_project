@@ -20,10 +20,7 @@ const userSchema = new mongoose.Schema(
       enum: ["user", "admin"],
       default: "user",
     },
-    subscribed: {
-      type: Boolean,
-      default: false,
-    },
+    // Removed subscribed field
   },
   { timestamps: true }
 );

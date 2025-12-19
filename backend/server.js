@@ -7,7 +7,6 @@ import fs from "fs";
 import { fileURLToPath } from "url";
 
 import songRoutes from "./routes/songRoutes.js";
-import subscriptionRoutes from "./routes/subscriptionRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import playlistRoutes from "./routes/playlistRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
@@ -15,6 +14,7 @@ import vinylRoutes from "./routes/vinylRoutes.js";
 import cartRoutes from "./routes/cartRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
+// Removed subscriptionRoutes
 
 dotenv.config();
 
@@ -39,13 +39,11 @@ app.use("/uploads/songs", express.static("uploads/songs"));
 app.use("/uploads/covers", express.static("uploads/covers"));
 app.use("/uploads/vinyls", express.static("uploads/vinyls"));
 
-
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/songs", songRoutes);
-app.use("/api/subscription", subscriptionRoutes);
-app.use("/api/subscriptions", subscriptionRoutes);
+// Removed subscription routes
 app.use("/api/playlists", playlistRoutes);
 app.use("/api/vinyls", vinylRoutes);
 app.use("/api/cart", cartRoutes);
