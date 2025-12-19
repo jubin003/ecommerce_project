@@ -1,7 +1,7 @@
 import Playlist from "../models/Playlist.js";
 import User from "../models/User.js";
 
-// Create playlist (subscribed users only)
+// Create playlist (all users can create)
 export const createPlaylist = async (req, res) => {
   try {
     const { userId, name, description, songs } = req.body;
@@ -9,9 +9,7 @@ export const createPlaylist = async (req, res) => {
     const user = await User.findById(userId);
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    if (!user.subscribed) {
-      return res.status(403).json({ message: "You need a subscription to create playlists" });
-    }
+    // Removed subscription check - all users can create playlists
 
     const newPlaylist = await Playlist.create({ 
       user: userId, 

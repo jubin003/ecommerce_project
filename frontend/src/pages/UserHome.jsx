@@ -8,7 +8,6 @@ import Snowfall from "react-snowfall";
 export default function UserHome() {
   const [songs, setSongs] = useState([]);
   const [playlists, setPlaylists] = useState([]);
-  const [subscription, setSubscription] = useState(null);
   const [cartItemCount, setCartItemCount] = useState(0);
   const [currentSong, setCurrentSong] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -34,19 +33,6 @@ export default function UserHome() {
     };
     fetchSongs();
   }, []);
-
-  // Fetch subscription
-  useEffect(() => {
-    const fetchSubscription = async () => {
-      try {
-        const res = await API.get(`/subscription/${userId}`);
-        setSubscription(res.data.subscription);
-      } catch (err) {
-        console.log(err.response?.data || err.message);
-      }
-    };
-    fetchSubscription();
-  }, [userId]);
 
   // Fetch playlists
   useEffect(() => {
@@ -87,8 +73,6 @@ export default function UserHome() {
       }
     }
   }, [currentSong, isPlaying]);
-
-  const isSubscribed = subscription?.isActive === true;
 
   const handlePlaySong = (song) => {
     setCurrentSong(song);
@@ -186,21 +170,19 @@ export default function UserHome() {
             🎵 Browse
           </button>
 
-          {isSubscribed && (
-            <button
-              onClick={() => setView("playlists")}
-              style={{
-                padding: "10px 20px",
-                background: view === "playlists" ? "#1db954" : "#333",
-                color: "white",
-                border: "none",
-                borderRadius: "8px",
-                cursor: "pointer",
-              }}
-            >
-              📝 My Playlists
-            </button>
-          )}
+          <button
+            onClick={() => setView("playlists")}
+            style={{
+              padding: "10px 20px",
+              background: view === "playlists" ? "#1db954" : "#333",
+              color: "white",
+              border: "none",
+              borderRadius: "8px",
+              cursor: "pointer",
+            }}
+          >
+            📝 My Playlists
+          </button>
 
           <button
             onClick={() => navigate("/cart")}
@@ -271,36 +253,6 @@ export default function UserHome() {
 
       {/* Main Content */}
       <div style={{ padding: "40px" }}>
-        {/* Subscription status */}
-        <div style={{ marginBottom: "30px", textAlign: "center" }}>
-          {isSubscribed ? (
-            <p style={{ color: "#1db954", fontWeight: "bold", fontSize: "18px" }}>
-              ✓ Premium Member - Create Playlists & Enjoy Ad-Free Music
-            </p>
-          ) : (
-            <div>
-              <p style={{ color: "orange", marginBottom: "15px", fontSize: "18px" }}>
-                Upgrade to Premium for unlimited features!
-              </p>
-              <button
-                onClick={() => navigate("/subscriptions")}
-                style={{
-                  padding: "12px 30px",
-                  backgroundColor: "#1db954",
-                  color: "white",
-                  border: "none",
-                  cursor: "pointer",
-                  borderRadius: "8px",
-                  fontSize: "16px",
-                  fontWeight: "bold",
-                }}
-              >
-                View Plans
-              </button>
-            </div>
-          )}
-        </div>
-
         {/* Browse Music View */}
         {view === "browse" && (
           <>
@@ -323,8 +275,8 @@ export default function UserHome() {
           </>
         )}
 
-        {/* Playlists View */}
-        {view === "playlists" && isSubscribed && (
+        {/* Playlists View - Now available to all users */}
+        {view === "playlists" && (
           <div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "30px" }}>
               <h3 style={{ margin: 0 }}>My Playlists</h3>

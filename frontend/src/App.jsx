@@ -4,12 +4,12 @@ import Register from "./pages/Register";
 import AdminHome from "./pages/AdminHome";
 import UserHome from "./pages/UserHome";
 import ProtectedRoute from "./components/ProtectedRoute";
-import SubscriptionInfo from "./pages/Subscriptions";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import Orders from "./pages/Orders";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import PaymentFailed from "./pages/PaymentFailed";
+// Removed SubscriptionInfo import
 
 function App() {
   return (
@@ -28,14 +28,7 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/subscriptions"
-          element={
-            <ProtectedRoute allowedRoles={["user"]}>
-              <SubscriptionInfo />
-            </ProtectedRoute>
-          }
-        />
+        {/* Removed subscription route */}
         <Route
           path="/cart"
           element={
