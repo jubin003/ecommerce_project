@@ -14,6 +14,7 @@ import authRoutes from "./routes/authRoutes.js";
 import vinylRoutes from "./routes/vinylRoutes.js";
 import cartRoutes from "./routes/cartRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
+import paymentRoutes from "./routes/paymentRoutes.js";
 
 dotenv.config();
 
@@ -38,6 +39,7 @@ app.use("/uploads/songs", express.static("uploads/songs"));
 app.use("/uploads/covers", express.static("uploads/covers"));
 app.use("/uploads/vinyls", express.static("uploads/vinyls"));
 
+
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
@@ -48,6 +50,7 @@ app.use("/api/playlists", playlistRoutes);
 app.use("/api/vinyls", vinylRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/orders", orderRoutes);
+app.use("/api/payment", paymentRoutes);
 
 // MongoDB
 mongoose

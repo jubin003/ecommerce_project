@@ -32,7 +32,7 @@ export default function Checkout() {
     }, 0).toFixed(2);
   };
 
-  const handlePlaceOrder = async (e) => {
+  const handlePayWithKhalti = async (e) => {
     e.preventDefault();
     if (!shippingAddress.trim()) {
       alert("Please enter a shipping address");
@@ -41,14 +41,20 @@ export default function Checkout() {
 
     try {
       setLoading(true);
-      const res = await API.post("/orders/create", {
+      const res = await API.post("/payment/initialize-khalti", {
         userId,
         shippingAddress,
+        website_url: window.location.origin,
       });
-      alert("Order placed successfully!");
-      navigate("/orders");
+
+      if (res.data.success && res.data.payment.payment_url) {
+        // Redirect to Khalti payment page
+        window.location.href = res.data.payment.payment_url;
+      } else {
+        alert("Failed to initialize payment");
+      }
     } catch (err) {
-      alert(err.response?.data?.message || "Failed to place order");
+      alert(err.response?.data?.message || "Failed to initialize payment");
     } finally {
       setLoading(false);
     }
@@ -114,7 +120,7 @@ export default function Checkout() {
         </div>
 
         {/* Shipping Form */}
-        <form onSubmit={handlePlaceOrder}>
+        <form onSubmit={handlePayWithKhalti}>
           <div
             style={{
               background: "#1a1a1a",
@@ -146,6 +152,41 @@ export default function Checkout() {
             />
           </div>
 
+          {/* Payment Method */}
+          <div
+            style={{
+              background: "#1a1a1a",
+              padding: "25px",
+              borderRadius: "12px",
+              marginBottom: "20px",
+            }}
+          >
+            <h2 style={{ marginBottom: "20px" }}>Payment Method</h2>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "15px",
+                padding: "15px",
+                background: "#0f0f0f",
+                borderRadius: "8px",
+                border: "2px solid #5c2d91",
+              }}
+            >
+              <img
+                src="https://web.khalti.com/static/img/logo1.png"
+                alt="Khalti"
+                style={{ height: "40px" }}
+              />
+              <div>
+                <p style={{ margin: 0, fontWeight: "bold" }}>Khalti Payment</p>
+                <p style={{ margin: 0, fontSize: "14px", color: "#b3b3b3" }}>
+                  Pay securely with Khalti
+                </p>
+              </div>
+            </div>
+          </div>
+
           {/* Action Buttons */}
           <div style={{ display: "flex", gap: "15px", justifyContent: "flex-end" }}>
             <button
@@ -168,16 +209,26 @@ export default function Checkout() {
               disabled={loading}
               style={{
                 padding: "12px 30px",
-                background: loading ? "#666" : "#1db954",
+                background: loading ? "#666" : "#5c2d91",
                 color: "white",
                 border: "none",
                 borderRadius: "8px",
                 cursor: loading ? "not-allowed" : "pointer",
                 fontSize: "16px",
                 fontWeight: "bold",
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
               }}
             >
-              {loading ? "Placing Order..." : "Place Order"}
+              {loading ? "Processing..." : "Pay with Khalti"}
+              {!loading && (
+                <img
+                  src="https://web.khalti.com/static/img/logo1.png"
+                  alt="Khalti"
+                  style={{ height: "20px" }}
+                />
+              )}
             </button>
           </div>
         </form>
