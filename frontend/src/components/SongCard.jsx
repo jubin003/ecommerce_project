@@ -226,7 +226,7 @@ export default function SongCard({ song, onPlay, isCurrentlyPlaying, onAddToCart
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <div>
               <p style={{ margin: 0, fontSize: "14px", color: "#1db954", fontWeight: "bold" }}>
-                ${vinyl.price}
+                Rs.{vinyl.price}
               </p>
               <p style={{ margin: 0, fontSize: "11px", color: "#888" }}>
                 {vinyl.quantity} in stock

@@ -150,7 +150,7 @@ export default function AdminVinyls() {
         )}
 
         <div style={{ marginBottom: "15px" }}>
-          <label style={{ display: "block", marginBottom: "5px" }}>Price ($) *</label>
+          <label style={{ display: "block", marginBottom: "5px" }}>Price (Rs. ) *</label>
           <input
             type="number"
             step="0.01"
@@ -264,7 +264,7 @@ export default function AdminVinyls() {
               {vinyl.song?.artist || "Unknown Artist"}
             </p>
             <p style={{ margin: "0 0 5px 0", color: "#1db954", fontSize: "18px", fontWeight: "bold" }}>
-              ${vinyl.price}
+              Rs. {vinyl.price}
             </p>
             <p style={{ margin: "0 0 15px 0", color: "#888" }}>Stock: {vinyl.quantity}</p>
             <div style={{ display: "flex", gap: "10px" }}>

@@ -137,7 +137,7 @@ export default function Cart() {
                       {item.vinyl?.song?.artist || "Unknown Artist"}
                     </p>
                     <p style={{ margin: 0, color: "#1db954", fontSize: "18px", fontWeight: "bold" }}>
-                      ${item.vinyl?.price || 0}
+                      Rs. {item.vinyl?.price || 0}
                     </p>
                   </div>
 
@@ -177,7 +177,7 @@ export default function Cart() {
                   {/* Subtotal */}
                   <div style={{ width: "100px", textAlign: "right" }}>
                     <p style={{ margin: 0, fontSize: "18px", fontWeight: "bold" }}>
-                      ${((item.vinyl?.price || 0) * item.quantity).toFixed(2)}
+                      Rs. {((item.vinyl?.price || 0) * item.quantity).toFixed(2)}
                     </p>
                   </div>
 
@@ -213,7 +213,7 @@ export default function Cart() {
               <div>
                 <h2 style={{ margin: "0 0 10px 0" }}>Total</h2>
                 <p style={{ margin: 0, fontSize: "32px", color: "#1db954", fontWeight: "bold" }}>
-                  ${calculateTotal()}
+                  Rs. {calculateTotal()}
                 </p>
               </div>
               <button

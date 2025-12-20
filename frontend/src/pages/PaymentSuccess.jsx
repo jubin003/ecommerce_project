@@ -115,7 +115,7 @@ export default function PaymentSuccess() {
               Order ID: {order._id}
             </p>
             <p style={{ margin: "0 0 10px 0", fontSize: "14px", color: "#888" }}>
-              Total Amount: <span style={{ color: "#1db954", fontWeight: "bold" }}>${order.totalAmount.toFixed(2)}</span>
+              Total Amount: <span style={{ color: "#1db954", fontWeight: "bold" }}>Rs. {order.totalAmount.toFixed(2)}</span>
             </p>
             <p style={{ margin: 0, fontSize: "14px", color: "#888" }}>
               Status: <span style={{ color: "#FFA726", fontWeight: "bold" }}>Processing</span>
