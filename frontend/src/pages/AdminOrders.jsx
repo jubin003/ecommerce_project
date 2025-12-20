@@ -90,7 +90,7 @@ export default function AdminOrders() {
                 </div>
                 <div style={{ textAlign: "right" }}>
                   <p style={{ margin: "0 0 10px 0", fontSize: "28px", fontWeight: "bold", color: "#1db954" }}>
-                    ${order.totalAmount.toFixed(2)}
+                    Rs. {order.totalAmount.toFixed(2)}
                   </p>
                   <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
                     <span
@@ -150,7 +150,7 @@ export default function AdminOrders() {
                     <div style={{ textAlign: "right" }}>
                       <p style={{ margin: "0 0 5px 0" }}>Qty: {item.quantity}</p>
                       <p style={{ margin: 0, color: "#1db954", fontWeight: "bold" }}>
-                        ${item.price.toFixed(2)} each
+                        Rs. {item.price.toFixed(2)} each
                       </p>
                     </div>
                   </div>

@@ -101,7 +101,7 @@ export default function Checkout() {
                 </p>
               </div>
               <p style={{ margin: 0, color: "#1db954", fontWeight: "bold" }}>
-                ${((item.vinyl?.price || 0) * item.quantity).toFixed(2)}
+                Rs. {((item.vinyl?.price || 0) * item.quantity).toFixed(2)}
               </p>
             </div>
           ))}
@@ -115,7 +115,7 @@ export default function Checkout() {
             }}
           >
             <span>Total:</span>
-            <span style={{ color: "#1db954" }}>${calculateTotal()}</span>
+            <span style={{ color: "#1db954" }}>Rs. {calculateTotal()}</span>
           </div>
         </div>
 
