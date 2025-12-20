@@ -30,7 +30,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Create upload directories
-["uploads/songs", "uploads/covers", "uploads/vinyls"].forEach(dir => {
+["uploads/songs", "uploads/covers", "uploads/vinyls","uploads/hero"].forEach(dir => {
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 });
 
@@ -38,6 +38,7 @@ const __dirname = path.dirname(__filename);
 app.use("/uploads/songs", express.static("uploads/songs"));
 app.use("/uploads/covers", express.static("uploads/covers"));
 app.use("/uploads/vinyls", express.static("uploads/vinyls"));
+app.use("/uploads/hero", express.static("uploads/hero"));
 
 // Routes
 app.use("/api/auth", authRoutes);
