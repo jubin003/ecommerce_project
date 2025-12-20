@@ -14,12 +14,48 @@ export default function UserHome() {
   const [view, setView] = useState("browse");
   const audioRef = useRef(null);
   
+  // Hero carousel state
+  const [heroImages, setHeroImages] = useState([]);
+  const [currentHeroIndex, setCurrentHeroIndex] = useState(0);
+  
   // Playlist creation form
   const [showCreatePlaylist, setShowCreatePlaylist] = useState(false);
   const [playlistForm, setPlaylistForm] = useState({ name: "", description: "", songs: [] });
 
   const userId = localStorage.getItem("userId");
   const navigate = useNavigate();
+
+  // Fetch hero images
+  useEffect(() => {
+    const fetchHeroImages = async () => {
+      try {
+        // Simulating hero images - in production, create an API endpoint to fetch hero images
+        const images = [
+          "http://localhost:5001/uploads/hero/hero1.jpg",
+          "http://localhost:5001/uploads/hero/hero2.jpg",
+          "http://localhost:5001/uploads/hero/hero3.jpg",
+          "http://localhost:5001/uploads/hero/hero4.jpg",
+        ];
+        setHeroImages(images);
+      } catch (err) {
+        console.log("Error fetching hero images:", err);
+      }
+    };
+    fetchHeroImages();
+  }, []);
+
+  // Auto-scroll hero carousel
+  useEffect(() => {
+    if (heroImages.length === 0) return;
+    
+    const interval = setInterval(() => {
+      setCurrentHeroIndex((prevIndex) => 
+        prevIndex === heroImages.length - 1 ? 0 : prevIndex + 1
+      );
+    }, 4000); // Change image every 4 seconds
+
+    return () => clearInterval(interval);
+  }, [heroImages.length]);
 
   // Fetch songs
   useEffect(() => {
@@ -139,10 +175,23 @@ export default function UserHome() {
     }
   };
 
+  const goToHeroImage = (index) => {
+    setCurrentHeroIndex(index);
+  };
+
   return (
     <div style={{ minHeight: "100vh", background: "#0f0f0f", color: "white", paddingBottom: currentSong ? "100px" : "0" }}>
       <Snowfall color="#90D5FF"/>
-      {/* Header/Navigation */}
+      <head>
+
+          <meta charset="UTF-8" />
+          <meta name="Music" content="Stream music, create playlists, and discover songs online." />
+          <meta name="vinyl" content="music, songs, vinly" />
+          <meta name="Buy" content="buy vinyl online" />
+
+        </head>
+
+      
       <div
         style={{
           background: "#1a1a1a",
@@ -153,7 +202,7 @@ export default function UserHome() {
           borderBottom: "1px solid #333",
         }}
       >
-        <h2 style={{ margin: 0 }}>Music Store</h2>
+        <h2 style={{ margin: 0 }}>Musify</h2>
         <div style={{ display: "flex", gap: "15px", alignItems: "center" }}>
           {/* View Toggle */}
           <button
@@ -165,6 +214,7 @@ export default function UserHome() {
               border: "none",
               borderRadius: "8px",
               cursor: "pointer",
+              transition: "all 0.3s",
             }}
           >
             🎵 Browse
@@ -179,6 +229,7 @@ export default function UserHome() {
               border: "none",
               borderRadius: "8px",
               cursor: "pointer",
+              transition: "all 0.3s",
             }}
           >
             📝 My Playlists
@@ -195,6 +246,7 @@ export default function UserHome() {
               cursor: "pointer",
               position: "relative",
               fontSize: "16px",
+              transition: "all 0.3s",
             }}
           >
             🛒 Cart
@@ -230,6 +282,7 @@ export default function UserHome() {
               border: "none",
               borderRadius: "8px",
               cursor: "pointer",
+              transition: "all 0.3s",
             }}
           >
             📦 Orders
@@ -244,12 +297,147 @@ export default function UserHome() {
               border: "none",
               borderRadius: "8px",
               cursor: "pointer",
+              transition: "all 0.3s",
             }}
           >
             Logout
           </button>
         </div>
       </div>
+
+      {/* Hero Carousel Section */}
+      {view === "browse" && heroImages.length > 0 && (
+        <div
+          style={{
+            position: "relative",
+            width: "100%",
+            height: "400px",
+            overflow: "hidden",
+            background: "#000",
+          }}
+        >
+          {/* Hero Images */}
+          {heroImages.map((image, index) => (
+            <div
+              key={index}
+              style={{
+                position: "absolute",
+                width: "100%",
+                height: "100%",
+                opacity: currentHeroIndex === index ? 1 : 0,
+                transition: "opacity 1s ease-in-out",
+                backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(15,15,15,0.8)), url(${image})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+              }}
+            >
+              {/* Hero Content Overlay */}
+              <div
+                style={{
+                  position: "absolute",
+                  bottom: "40px",
+                  left: "40px",
+                  zIndex: 10,
+                }}
+              >
+                <h1 style={{ 
+                  fontSize: "48px", 
+                  marginBottom: "10px",
+                  textShadow: "2px 2px 8px rgba(0,0,0,0.8)"
+                }}>
+                  Discover Amazing Music
+                </h1>
+                <p style={{ 
+                  fontSize: "20px", 
+                  color: "#b3b3b3",
+                  textShadow: "1px 1px 4px rgba(0,0,0,0.8)"
+                }}>
+                  Stream your favorite songs and Buy Vinyl online
+                </p>
+              </div>
+            </div>
+          ))}
+
+          {/* Navigation Dots */}
+          <div
+            style={{
+              position: "absolute",
+              bottom: "20px",
+              left: "50%",
+              transform: "translateX(-50%)",
+              display: "flex",
+              gap: "10px",
+              zIndex: 20,
+            }}
+          >
+            {heroImages.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => goToHeroImage(index)}
+                style={{
+                  width: currentHeroIndex === index ? "30px" : "10px",
+                  height: "10px",
+                  borderRadius: "5px",
+                  background: currentHeroIndex === index ? "#1db954" : "#666",
+                  border: "none",
+                  cursor: "pointer",
+                  transition: "all 0.3s",
+                }}
+              />
+            ))}
+          </div>
+
+          {/* Previous Button */}
+          <button
+            onClick={() => setCurrentHeroIndex(currentHeroIndex === 0 ? heroImages.length - 1 : currentHeroIndex - 1)}
+            style={{
+              position: "absolute",
+              left: "20px",
+              top: "50%",
+              transform: "translateY(-50%)",
+              background: "rgba(0,0,0,0.5)",
+              color: "white",
+              border: "none",
+              borderRadius: "50%",
+              width: "50px",
+              height: "50px",
+              fontSize: "24px",
+              cursor: "pointer",
+              zIndex: 20,
+              transition: "all 0.3s",
+            }}
+            onMouseEnter={(e) => e.target.style.background = "rgba(29, 185, 84, 0.8)"}
+            onMouseLeave={(e) => e.target.style.background = "rgba(0,0,0,0.5)"}
+          >
+            ‹
+          </button>
+
+          {/* Next Button */}
+          <button
+            onClick={() => setCurrentHeroIndex(currentHeroIndex === heroImages.length - 1 ? 0 : currentHeroIndex + 1)}
+            style={{
+              position: "absolute",
+              right: "20px",
+              top: "50%",
+              transform: "translateY(-50%)",
+              background: "rgba(0,0,0,0.5)",
+              color: "white",
+              border: "none",
+              borderRadius: "50%",
+              width: "50px",
+              height: "50px",
+              fontSize: "24px",
+              cursor: "pointer",
+              zIndex: 20,
+              transition: "all 0.3s",
+            }}
+            onMouseEnter={(e) => e.target.style.background = "rgba(29, 185, 84, 0.8)"}
+            onMouseLeave={(e) => e.target.style.background = "rgba(0,0,0,0.5)"}
+          >
+            ›
+          </button>
+        </div>
+      )}
 
       {/* Main Content */}
       <div style={{ padding: "40px" }}>
@@ -275,7 +463,7 @@ export default function UserHome() {
           </>
         )}
 
-        {/* Playlists View - Now available to all users */}
+        {/* Playlists View */}
         {view === "playlists" && (
           <div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "30px" }}>
@@ -291,6 +479,7 @@ export default function UserHome() {
                   cursor: "pointer",
                   fontSize: "16px",
                   fontWeight: "bold",
+                  transition: "all 0.3s",
                 }}
               >
                 {showCreatePlaylist ? "Cancel" : "+ Create Playlist"}
@@ -299,7 +488,7 @@ export default function UserHome() {
 
             {/* Create Playlist Form */}
             {showCreatePlaylist && (
-              <div style={{ background: "#1a1a1a", padding: "25px", borderRadius: "12px", marginBottom: "30px" }}>
+              <div style={{ background: "#1a1a1a", padding: "25px", borderRadius: "12px", marginBottom: "30px", border: "1px solid #333" }}>
                 <h4 style={{ marginBottom: "20px" }}>Create New Playlist</h4>
                 <form onSubmit={handleCreatePlaylist}>
                   <input
@@ -382,6 +571,7 @@ export default function UserHome() {
                       cursor: "pointer",
                       fontSize: "16px",
                       fontWeight: "bold",
+                      transition: "all 0.3s",
                     }}
                   >
                     Create Playlist
@@ -503,6 +693,7 @@ export default function UserHome() {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
+              transition: "all 0.3s",
             }}
           >
             {isPlaying ? "⏸" : "▶"}
@@ -534,6 +725,7 @@ export default function UserHome() {
               color: "white",
               fontSize: "16px",
               cursor: "pointer",
+              transition: "all 0.3s",
             }}
           >
             ✕

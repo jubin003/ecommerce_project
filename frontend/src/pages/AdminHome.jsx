@@ -4,6 +4,7 @@ import AdminSongs from "./AdminSongs";
 import AdminVinyls from "./AdminVinyls";
 import AdminOrders from "./AdminOrders";
 import API from "../api";
+import Snowfall from "react-snowfall";
 
 export default function AdminHome() {
   const [view, setView] = useState("dashboard");
@@ -28,173 +29,212 @@ export default function AdminHome() {
       }
     };
     fetchStats();
-  }, [view]); // Refresh stats when view changes
+  }, [view]);
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        width: "100%",
-        background: "linear-gradient(to bottom right, #2b2d42, #8d99ae)",
-        padding: "20px",
-      }}
-    >
+    <div style={{ minHeight: "100vh", background: "#0f0f0f", color: "white" }}>
+      <Snowfall color="#90D5FF" />
+      
+      {/* Header/Navigation */}
       <div
         style={{
-          maxWidth: "1200px",
-          margin: "0 auto",
-          background: "rgba(255, 255, 255, 0.1)",
-          backdropFilter: "blur(10px)",
-          padding: "30px",
-          borderRadius: "15px",
-          color: "white",
-          boxShadow: "0 0 20px rgba(0,0,0,0.3)",
+          background: "#1a1a1a",
+          padding: "20px 40px",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          borderBottom: "1px solid #333",
         }}
       >
-        <h1 style={{ marginBottom: "20px", textAlign: "center" }}>Admin Dashboard</h1>
-
-        {/* Navigation Buttons */}
-        <div style={{ marginBottom: "25px", textAlign: "center" }}>
+        <h2 style={{ margin: 0 }}>🎵 Admin Dashboard</h2>
+        <div style={{ display: "flex", gap: "15px", alignItems: "center" }}>
           <button
             onClick={() => setView("dashboard")}
             style={{
-              padding: "12px 25px",
-              marginRight: "10px",
-              background: view === "dashboard" ? "#ef233c" : "#666",
+              padding: "10px 20px",
+              background: view === "dashboard" ? "#1db954" : "#333",
               color: "white",
               border: "none",
               borderRadius: "8px",
               cursor: "pointer",
+              transition: "all 0.3s",
             }}
           >
-            Dashboard
+            📊 Dashboard
           </button>
 
           <button
             onClick={() => setView("songs")}
             style={{
-              padding: "12px 25px",
-              marginRight: "10px",
-              background: view === "songs" ? "#d90429" : "#666",
+              padding: "10px 20px",
+              background: view === "songs" ? "#1db954" : "#333",
               color: "white",
               border: "none",
               borderRadius: "8px",
               cursor: "pointer",
+              transition: "all 0.3s",
             }}
           >
-            Manage Songs
+            🎵 Songs
           </button>
 
           <button
             onClick={() => setView("vinyls")}
             style={{
-              padding: "12px 25px",
-              marginRight: "10px",
-              background: view === "vinyls" ? "#d90429" : "#666",
+              padding: "10px 20px",
+              background: view === "vinyls" ? "#1db954" : "#333",
               color: "white",
               border: "none",
               borderRadius: "8px",
               cursor: "pointer",
+              transition: "all 0.3s",
             }}
           >
-            Manage Vinyls
+            💿 Vinyls
           </button>
 
           <button
             onClick={() => setView("orders")}
             style={{
-              padding: "12px 25px",
-              marginRight: "10px",
-              background: view === "orders" ? "#d90429" : "#666",
+              padding: "10px 20px",
+              background: view === "orders" ? "#1db954" : "#333",
               color: "white",
               border: "none",
               borderRadius: "8px",
               cursor: "pointer",
+              transition: "all 0.3s",
             }}
           >
-            Orders
+            📦 Orders
           </button>
 
           <button
             onClick={logout}
             style={{
-              padding: "12px 25px",
-              background: "#000",
+              padding: "10px 20px",
+              background: "#d32f2f",
               color: "white",
               border: "none",
               borderRadius: "8px",
               cursor: "pointer",
+              transition: "all 0.3s",
             }}
           >
             Logout
           </button>
         </div>
+      </div>
 
+      {/* Main Content */}
+      <div style={{ padding: "40px" }}>
         {/* Dashboard View */}
         {view === "dashboard" && (
           <div>
-            <h2 style={{ textAlign: "center", marginBottom: "30px" }}>Overview</h2>
+            <h2 style={{ marginBottom: "30px" }}>Overview</h2>
 
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+                gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
                 gap: "25px",
-                marginTop: "25px",
               }}
             >
               <div
                 style={{
-                  padding: "20px",
-                  background: "rgba(0,0,0,0.3)",
+                  background: "#1a1a1a",
+                  padding: "30px",
                   borderRadius: "12px",
+                  border: "1px solid #333",
                   textAlign: "center",
+                  transition: "transform 0.3s, box-shadow 0.3s",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = "translateY(-5px)";
+                  e.currentTarget.style.boxShadow = "0 8px 16px rgba(29, 185, 84, 0.3)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = "translateY(0)";
+                  e.currentTarget.style.boxShadow = "none";
                 }}
               >
-                <h3>Total Users</h3>
-                <p style={{ fontSize: "26px", fontWeight: "bold" }}>
+                <div style={{ fontSize: "40px", marginBottom: "10px" }}>👥</div>
+                <h3 style={{ marginBottom: "10px", color: "#b3b3b3" }}>Total Users</h3>
+                <p style={{ fontSize: "32px", fontWeight: "bold", color: "#1db954", margin: 0 }}>
                   {stats.users}
                 </p>
               </div>
 
               <div
                 style={{
-                  padding: "20px",
-                  background: "rgba(0,0,0,0.3)",
+                  background: "#1a1a1a",
+                  padding: "30px",
                   borderRadius: "12px",
+                  border: "1px solid #333",
                   textAlign: "center",
+                  transition: "transform 0.3s, box-shadow 0.3s",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = "translateY(-5px)";
+                  e.currentTarget.style.boxShadow = "0 8px 16px rgba(29, 185, 84, 0.3)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = "translateY(0)";
+                  e.currentTarget.style.boxShadow = "none";
                 }}
               >
-                <h3>Total Songs</h3>
-                <p style={{ fontSize: "26px", fontWeight: "bold" }}>
+                <div style={{ fontSize: "40px", marginBottom: "10px" }}>🎵</div>
+                <h3 style={{ marginBottom: "10px", color: "#b3b3b3" }}>Total Songs</h3>
+                <p style={{ fontSize: "32px", fontWeight: "bold", color: "#1db954", margin: 0 }}>
                   {stats.songs}
                 </p>
               </div>
 
               <div
                 style={{
-                  padding: "20px",
-                  background: "rgba(0,0,0,0.3)",
+                  background: "#1a1a1a",
+                  padding: "30px",
                   borderRadius: "12px",
+                  border: "1px solid #333",
                   textAlign: "center",
+                  transition: "transform 0.3s, box-shadow 0.3s",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = "translateY(-5px)";
+                  e.currentTarget.style.boxShadow = "0 8px 16px rgba(29, 185, 84, 0.3)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = "translateY(0)";
+                  e.currentTarget.style.boxShadow = "none";
                 }}
               >
-                <h3>Vinyls</h3>
-                <p style={{ fontSize: "26px", fontWeight: "bold" }}>
+                <div style={{ fontSize: "40px", marginBottom: "10px" }}>💿</div>
+                <h3 style={{ marginBottom: "10px", color: "#b3b3b3" }}>Vinyls</h3>
+                <p style={{ fontSize: "32px", fontWeight: "bold", color: "#1db954", margin: 0 }}>
                   {stats.vinyls}
                 </p>
               </div>
 
               <div
                 style={{
-                  padding: "20px",
-                  background: "rgba(0,0,0,0.3)",
+                  background: "#1a1a1a",
+                  padding: "30px",
                   borderRadius: "12px",
+                  border: "1px solid #333",
                   textAlign: "center",
+                  transition: "transform 0.3s, box-shadow 0.3s",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = "translateY(-5px)";
+                  e.currentTarget.style.boxShadow = "0 8px 16px rgba(29, 185, 84, 0.3)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = "translateY(0)";
+                  e.currentTarget.style.boxShadow = "none";
                 }}
               >
-                <h3>Orders</h3>
-                <p style={{ fontSize: "26px", fontWeight: "bold" }}>
+                <div style={{ fontSize: "40px", marginBottom: "10px" }}>📦</div>
+                <h3 style={{ marginBottom: "10px", color: "#b3b3b3" }}>Orders</h3>
+                <p style={{ fontSize: "32px", fontWeight: "bold", color: "#1db954", margin: 0 }}>
                   {stats.orders}
                 </p>
               </div>
